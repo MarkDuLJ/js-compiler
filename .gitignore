@@ -1,0 +1,47 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Environment variables
+.env
+
+# Build outputs
+dist/
+build/
+out/
+
+# Cache files
+.cache/
+.nyc_output/
+coverage/
+tmp/
+temp/
+
+# Editor-specific files
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Testing-related
+# *.test.*
+# __tests__/
+coverage/
+
+# Miscellaneous
+*.bak
+*.pid
+*.seed
+*.pid.lock
