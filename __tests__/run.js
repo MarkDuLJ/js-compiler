@@ -17,3 +17,15 @@ test('convert string 33 to number 33', ()=>{
             }
     });
 })
+
+test('convert string hello to hello', ()=>{
+    const program = `"hello"`;
+    const ast = parser.parse(program);
+    expect(ast).toMatchObject({
+        type: "Program",
+            body: {
+                type: 'StringLiteral',
+                value: "hello"
+            }
+    });
+})
