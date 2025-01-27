@@ -66,3 +66,37 @@ test('not skip whitespaces in string', ()=>{
     });
 })
 
+test('single line comment', ()=>{
+    const program = `  
+    /this is single line comment
+    "comment"
+     `;
+    const ast = parser.parse(program);
+    expect(ast).toMatchObject({
+        type: "Program",
+            body: {
+                type: 'StringLiteral',
+                value: "comment"
+            }
+    });
+})
+
+test('multiline comment', ()=>{
+    const program = `
+      
+    /**this is single line comment
+     * 
+    *multiline
+    */
+    "documention comment"
+     `;
+    const ast = parser.parse(program);
+    expect(ast).toMatchObject({
+        type: "Program",
+            body: {
+                type: 'StringLiteral',
+                value: "documention comment"
+            }
+    });
+})
+

@@ -3,7 +3,7 @@
  */
 const Filter = [
     [/^\s+/, null],
-    // [/^\/\/.*/, null],
+    [/^\/\/.*/, null],
     [/^\d+/, 'NUMBER'],
     [/"[^"]*"/, 'STRING'],
     [/^'[^']*'/, 'STRING'],
@@ -31,7 +31,7 @@ class Tokenizer {
 
         for (const [regex, tokenType] of Filter) {
             const tokenVal = this._match(regex, str);
-            // console.log(`Value: "${tokenVal}", type: ${tokenType}`);
+            console.log(`Value: "${tokenVal}", type: ${tokenType}`);
             
             if(tokenVal == null) continue;
 
@@ -103,6 +103,7 @@ class Tokenizer {
         if (matched === null) {
             return null;
         }
+console.log(`MATCHED: ${matched} from "${string}"`);
 
         this._cursor += matched[0].length; //move cursor forward
         return matched[0];
