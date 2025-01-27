@@ -41,3 +41,28 @@ test('accept single quote string hi to hi', ()=>{
             }
     });
 })
+
+test('skip whitespaces', ()=>{
+    const program = `  55  `;
+    const ast = parser.parse(program);
+    expect(ast).toMatchObject({
+        type: "Program",
+            body: {
+                type: 'NumericLiteral',
+                value: 55
+            }
+    });
+})
+
+test('not skip whitespaces in string', ()=>{
+    const program = `  "11 22 33"  `;
+    const ast = parser.parse(program);
+    expect(ast).toMatchObject({
+        type: "Program",
+            body: {
+                type: 'StringLiteral',
+                value: "11 22 33"
+            }
+    });
+})
+

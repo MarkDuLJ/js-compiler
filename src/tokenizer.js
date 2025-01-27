@@ -2,6 +2,8 @@
  * Tokenizer spec mapping
  */
 const Filter = [
+    [/^\s+/, null],
+    // [/^\/\/.*/, null],
     [/^\d+/, 'NUMBER'],
     [/"[^"]*"/, 'STRING'],
     [/^'[^']*'/, 'STRING'],
@@ -29,12 +31,19 @@ class Tokenizer {
 
         for (const [regex, tokenType] of Filter) {
             const tokenVal = this._match(regex, str);
-            if(tokenVal === null) continue;
+            // console.log(`Value: "${tokenVal}", type: ${tokenType}`);
+            
+            if(tokenVal == null) continue;
+
+            //skip some tokens e.g. whitespace
+            if(tokenType == null) {  
+                return this.getNextToken();
+            }
             
             return {
                 type: tokenType,
                 value: tokenVal
-            }
+            };
         }
 
  /* replace with regex      
@@ -79,7 +88,7 @@ class Tokenizer {
             }
         }
 */
-        return null;
+        throw new SyntaxError(`Unrecognized token: "${str[0]}"`);
     }
 
     hasMoreTokens(){
@@ -94,6 +103,8 @@ class Tokenizer {
         if (matched === null) {
             return null;
         }
+
+        this._cursor += matched[0].length; //move cursor forward
         return matched[0];
     }
 }
