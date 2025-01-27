@@ -29,3 +29,15 @@ test('convert string hello to hello', ()=>{
             }
     });
 })
+
+test('accept single quote string hi to hi', ()=>{
+    const program = `'hi'`;
+    const ast = parser.parse(program);
+    expect(ast).toMatchObject({
+        type: "Program",
+            body: {
+                type: 'StringLiteral',
+                value: "hi"
+            }
+    });
+})

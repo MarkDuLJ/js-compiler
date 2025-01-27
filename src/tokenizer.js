@@ -19,32 +19,45 @@ class Tokenizer {
         const str = this._string.slice(this._cursor);
 
         //Numbers:
-        if (!isNaN(str[0])) {
-            let number = '';
-            while (!Number.isNaN(Number(str[this._cursor]))) {
-                number += str[this._cursor++];
-            }
+        let matched = /^\d+/.exec(str);
+        if (matched !== null) {
+            this._cursor += matched[0].length;
+            // let number = '';
+            // while (!Number.isNaN(Number(str[this._cursor]))) {
+            //     number += str[this._cursor++];
+            // }
             return {
                 type: "NUMBER",
-                value: number
+                value: matched[0]
             };
         }
 
         //String
-        if(str[0] === '"') {
-            let s = '';
-            do {
-                s += str[this._cursor++];
-            }
-            while (str[this._cursor] !== '"' && !this.isEof());
-            s += str[this._cursor++];           
+        matched = /"[^"]*"/.exec(str); //anything but " inside ""
+        if(matched !== null) {
+            this._cursor += matched[0].length;
+            // let s = '';
+            // do {
+            //     s += str[this._cursor++];
+            // }
+            // while (str[this._cursor] !== '"' && !this.isEof());
+            // s += str[this._cursor++];           
 
             return {
                 type: "STRING",
-                value: s,
+                value: matched[0],
             }
         }
 
+        // add single quote support '
+        matched = /^'[^']*'/.exec(str);
+        if(matched !== null) {
+            this._cursor += matched[0].length;
+            return {
+                type:"STRING",
+                value: matched[0],
+            }
+        }
         return null;
     }
 
