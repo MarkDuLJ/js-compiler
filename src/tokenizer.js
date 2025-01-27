@@ -1,3 +1,12 @@
+/**
+ * Tokenizer spec mapping
+ */
+const Filter = [
+    [/^\d+/, 'NUMBER'],
+    [/"[^"]*"/, 'STRING'],
+    [/^'[^']*'/, 'STRING'],
+]
+
 class Tokenizer {
     init(string) {
         this._string = string;
@@ -18,6 +27,17 @@ class Tokenizer {
 
         const str = this._string.slice(this._cursor);
 
+        for (const [regex, tokenType] of Filter) {
+            const tokenVal = this._match(regex, str);
+            if(tokenVal === null) continue;
+            
+            return {
+                type: tokenType,
+                value: tokenVal
+            }
+        }
+
+ /* replace with regex      
         //Numbers:
         let matched = /^\d+/.exec(str);
         if (matched !== null) {
@@ -58,11 +78,23 @@ class Tokenizer {
                 value: matched[0],
             }
         }
+*/
         return null;
     }
 
     hasMoreTokens(){
         return this._cursor < this._string.length;
+    }
+
+     /**
+         * Match a token from a regex
+         */
+     _match(regex, string){
+        const matched = regex.exec(string);
+        if (matched === null) {
+            return null;
+        }
+        return matched[0];
     }
 }
 
