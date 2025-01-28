@@ -1,101 +1,48 @@
-const { Tokenizer } = require('./tokenizer');
+const str = s => parserState => {
+    const {targetString, index} = parserState;
 
-class Parser {
-    /**
-     * initialize parser
-     */
-    constructor() {
-        this._string = '';
-        this._tokenizer = new Tokenizer();
-    }
-    /**
-     * Parses a string to AST
-     */
-    parse(string) {
-        this._string = string;
-        this._tokenizer.init(string);
-
-        this._lookahead = this._tokenizer.getNextToken();
-        return this.Program();
-    }
-
-    /**
-     * Main entry point
-     * 
-     * Program
-     *  :Literal
-     */
-    Program(){
+    if(targetString.slice(index).startsWith(s)){
         return {
-            type: "Program",
-            body:this.literal()
-        };
-    }
-
-    /**
-     * Literal
-     *     :NumericLiteral
-     *     :StringLiteral
-     */
-    literal() {
-        switch (this._lookahead.type) {
-            case 'NUMBER': return this.numericLiteral();
-            case 'STRING': return this.stringLiteral()
-            default:
-                throw new SyntaxError("Literal: unexpected literal");
+            ...parserState,
+            result: s,
+            index: index + s.length,
         }
     }
 
-    /**
-     * numericLiteral
-     *  :NUMBER
-     */
-    numericLiteral() {
-        const token = this._eat('NUMBER')
-        return {
-                type: 'NumericLiteral',
-                value: Number(token.value)
-            };
-    }
+    throw new Error(`Trying to match ${s}, got "${targetString}"`);
     
-    /**
-     * StringLiteral
-     *  :STRING
-    */
-   stringLiteral(){
-        const token = this._eat('STRING')
-        return {
-                type: 'StringLiteral',
-                value: token.value.slice(1,-1) //remove " both side
-            };
+}
+
+const sequenceOf = parsers => parserState => {
+    const results = [];
+    let nextState = parserState;
+
+    for (let p of parsers) {
+       nextState = p(nextState);
+        results.push(nextState.result);
     }
-    
 
-    /**
-     * Expects a token of given type
-     */
-    _eat(tokenType) {
-        const token = this._lookahead;
-
-        if(token == null){
-            throw new SyntaxError(
-                `Unexpected end of input, expected: ${tokenType}`,
-            )
-        };
-
-        if (token.type !== tokenType) {
-            throw new SyntaxError(
-                `Unexpected token: ${token.value}, expected: ${tokenType}`
-            );           
-        }
-
-        //get next token, update lookahead
-        this._lookahead = this._tokenizer.getNextToken();
-
-        return token;
+    return {
+        ...nextState,
+        result: results,
     }
 }
 
-module.exports = {
-    Parser
+const run =(parser, targetString) => {
+    const initialState = {
+        targetString,
+        index: 0,
+        result: null,
+    }
+    return parser(initialState);
 }
+
+module.exports ={
+    run,
+    sequenceOf,
+    str
+}
+
+
+
+
