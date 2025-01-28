@@ -1,6 +1,9 @@
 const str = s => parserState => {
-    const {targetString, index} = parserState;
+    const {targetString, index, isError} = parserState;
 
+    if(isError) {
+        return parserState;
+    }
     if(targetString.slice(index).startsWith(s)){
         return {
             ...parserState,
@@ -9,7 +12,12 @@ const str = s => parserState => {
         }
     }
 
-    throw new Error(`Trying to match ${s}, got "${targetString}"`);
+    //handle error
+    return {
+        ...parserState,
+        error: `Trying to match ${s}, got "${targetString}"`,
+        isError: true,
+    }
     
 }
 
@@ -33,6 +41,8 @@ const run =(parser, targetString) => {
         targetString,
         index: 0,
         result: null,
+        isError: false,
+        error:null,
     }
     return parser(initialState);
 }

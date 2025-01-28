@@ -12,7 +12,7 @@ test("parse string", () => {
     expect(result).toMatchObject({
         targetString: 'hello worldhello aaa world',
         index: 26,
-        result: [ 'hello world', 'hello aaa world' ]
+        result: [ 'hel world', 'hello aaa world' ]
     })
 })
 
