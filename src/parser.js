@@ -1,3 +1,20 @@
+const updateParserState = (state, index, result) => ({
+    ...state,
+    index,
+    result,
+})
+
+const updateParserResult = (state, result) => ({
+    ...state,
+    result,
+})
+
+const updateParserError = (state, errorMsg) => ({
+    ...state,
+    isError: true,
+    error: errorMsg
+})
+
 const str = s => parserState => {
     const {targetString, index, isError} = parserState;
 
@@ -5,19 +22,11 @@ const str = s => parserState => {
         return parserState;
     }
     if(targetString.slice(index).startsWith(s)){
-        return {
-            ...parserState,
-            result: s,
-            index: index + s.length,
-        }
+        return updateParserState(parserState, index + s.length, s);
     }
 
     //handle error
-    return {
-        ...parserState,
-        error: `Trying to match ${s}, got "${targetString}"`,
-        isError: true,
-    }
+    return updateParserError(parserState, `Trying to match ${s}, got "${targetString}"`);
     
 }
 
@@ -30,10 +39,7 @@ const sequenceOf = parsers => parserState => {
         results.push(nextState.result);
     }
 
-    return {
-        ...nextState,
-        result: results,
-    }
+    return updateParserResult(nextState, results);
 }
 
 const run =(parser, targetString) => {

@@ -12,7 +12,24 @@ test("parse string", () => {
     expect(result).toMatchObject({
         targetString: 'hello worldhello aaa world',
         index: 26,
-        result: [ 'hel world', 'hello aaa world' ]
+        result: [ 'hello world', 'hello aaa world' ]
+    })
+})
+
+test("parse unmatched string", () => {
+    const parser = //sequenceOf([
+        str('hello world');
+        // str('hello aaa world')
+    // ]); 
+    const result = run(parser,"hello");
+    console.log(result);
+    
+    expect(result).toMatchObject({
+        targetString: 'hello',
+      index: 0,
+      result: null,
+      isError: true,
+      error: 'Trying to match hello world, got "hello"'
     })
 })
 
