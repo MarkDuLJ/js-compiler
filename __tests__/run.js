@@ -1,14 +1,14 @@
 /**
  * Main test runner
  */
-const { run, sequenceOf, str } =require("../src/parser.js");
+const { sequenceOf, str } =require("../src/parser.js");
 
 test("parse string", () => {
     const parser = sequenceOf([
         str('hello world'),
         str('hello aaa world')
     ]); 
-    const result = run(parser,"hello worldhello aaa world");
+    const result = parser.run("hello worldhello aaa world");
     expect(result).toMatchObject({
         targetString: 'hello worldhello aaa world',
         index: 26,
@@ -23,7 +23,7 @@ test("parse unmatched string", () => {
         str('hello world');
         // str('hello aaa world')
         // ]); 
-        const result = run(parser,"hello");
+        const result = parser.run("hello");
         
         expect(result).toMatchObject({
             targetString: 'hello',
@@ -39,8 +39,7 @@ test("parse unmatched string", () => {
             str('hello world'),
             str('hello aaa world')
         ]); 
-        const result = run(parser,"hello worldhello aaa world");
-        console.log(result);
+        const result = parser.run("hello worldhello aaa world");
     
     expect(result).toMatchObject({
         targetString: 'hello worldhello aaa world',
@@ -49,5 +48,18 @@ test("parse unmatched string", () => {
         isError: false,
         error: null
     })
+})
+
+test("map parser result", () => {
+    const parser = str('hello').map(f => ({value: f.toUpperCase()}));
+    const result = parser.run('hello');
+    expect(result).toMatchObject({
+        targetString: 'hello',
+        index: 5,
+        result: {value:'HELLO'},
+        isError: false,
+        error: null
+    })
+
 })
 
