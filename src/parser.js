@@ -35,7 +35,18 @@ class Parser {
        return new Parser(parserState => {
             const nextState = this.parserStateTransFn(parserState);
 
+            if (nextState.isError) return nextState;
             return updateParserResult(nextState, fn(nextState.result))
+        })
+    }
+
+    errorMap(fn) {
+        return new Parser(parserState => {
+            const nextState = this.parserStateTransFn(parserState);
+
+            if( !nextState.isError) return nextState;
+
+            return updateParserError(nextState, fn(nextState.error, nextState.index));
         })
     }
 }

@@ -51,7 +51,9 @@ test("parse unmatched string", () => {
 })
 
 test("map parser result", () => {
-    const parser = str('hello').map(f => ({value: f.toUpperCase()}));
+    const parser = str('hello')
+        .map(f => ({value: f.toUpperCase()}))
+        .errorMap((msg,index) => `Expected info @ index ${index}`);
     const result = parser.run('hello');
     expect(result).toMatchObject({
         targetString: 'hello',
