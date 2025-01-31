@@ -1,7 +1,15 @@
 /**
  * Main test runner
  */
-const { sequenceOf, str } =require("../src/parser.js");
+const { 
+    sequenceOf,
+    str, 
+    letters, 
+    digits, 
+    choice, 
+    many, 
+    manyOne,
+} =require("../src/parser.js");
 
 test("parse string", () => {
     const parser = sequenceOf([
@@ -62,6 +70,87 @@ test("map parser result", () => {
         isError: false,
         error: null
     })
+})
 
+test("letter parser", () => {
+    const parser = letters;
+    const result = letters.run("hello");
+    expect(result).toMatchObject({
+        targetString: 'hello',
+        index: 5,
+        result: 'hello',
+        isError: false,
+        error: null
+    })
+})
+
+test("letter parser with numbers", () => {
+    const parser = letters;
+    const result = letters.run("12345");
+    expect(result).toMatchObject({
+        error: "Letter:Trying to match at index 0",
+       index: 0,
+       isError: true,
+       result: null,
+       targetString: "12345"
+    })
+})
+
+test("digit parser", () => {
+    const parser = digits;
+    const result = digits.run("12345");
+    expect(result).toMatchObject({
+        error: null,
+        index: 5,
+        isError: false,
+        result: "12345",
+        targetString: "12345"
+    })
+})
+
+test("sequence parser", () => {
+    const parser = sequenceOf([
+        digits,
+        letters,
+        digits,
+    ]);
+    const result = parser.run("123abc45");
+    expect(result).toMatchObject({
+        error: null,
+        index: 8,
+        isError: false,
+        result: ["123","abc","45"],
+        targetString: "123abc45"
+    })
+})
+
+test("choice parser", () => {
+    const parser = choice([
+        letters,
+        digits,
+    ]);
+    const result = parser.run("123abc45");
+    expect(result).toMatchObject({
+        error: null,
+        index: 3,
+        isError: false,
+        result: "123",
+        targetString: "123abc45"
+    })
+})
+
+test("many parser with choice", () => {
+    const parser = many(choice([
+        digits,
+        letters
+    ]));
+    const result = parser.run("123abc45");
+    expect(result).toMatchObject({
+        error: null,
+        index: 8,
+        isError: false,
+        result: ["123", "abc", "45"],
+        targetString: "123abc45"
+    })
 })
 
