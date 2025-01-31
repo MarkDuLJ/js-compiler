@@ -10,6 +10,8 @@ const {
     many, 
     manyOne,
     between,
+    separateBy,
+    lazy
 } =require("../src/parser.js");
 
 test("parse string", () => {
@@ -216,13 +218,30 @@ test("use parser combination", () => {
 
     const result = parser.run("diceroll:2d9");
 
-    console.log(result);
     expect(result).toMatchObject({
         targetString: 'diceroll:2d9',
         index: 12,
         result: diceResult,
         isError: false,
         error: null
+    })
+})
+
+// parse [1,[2,[3], 4], 5]
+test("recursive parser", ()=>{
+    const betweenBricket = between(str('['), str(']'));
+    const commaSeparated = separateBy(str(','));
+    const value =lazy(() => choice([
+        digits,
+        arrayParser,
+    ]));
+    const arrayParser = betweenBricket(commaSeparated(value));
+    const result = arrayParser.run("[1,[2,[3],4],5]");
+
+    console.log(result);
+    expect(result).toMatchObject({
+        error: null,
+        result: [ '1', [ '2', ['3'], '4' ], '5' ]
     })
 })
 

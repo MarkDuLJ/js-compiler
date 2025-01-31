@@ -204,7 +204,52 @@ const between = (leftparser, rightparser) => contentparser => sequenceOf([
     rightparser,
 ]).map(results => results[1]);
 
+const separateBy = separatorParser => valueParser => new Parser(parserState => {
+    const results = [];
+    let nextState = parserState;
+    while(true){
+        const desiredState = valueParser.parserStateTransFn(nextState);
+        if (desiredState.isError) break;
 
+        results.push(desiredState.result);
+        nextState = desiredState;
+
+        const separatorState = separatorParser.parserStateTransFn(nextState);
+        if (separatorState.isError) break;
+
+        nextState = separatorState;
+    }
+
+    return updateParserResult(nextState, results);
+});
+
+//return at least one value
+const separateByOne = separatorParser => valueParser => new Parser(parserState => {
+    const results = [];
+    let nextState = parserState;
+    while(true){
+        const desiredState = valueParser.parserStateTransFn(nextState);
+        if (desiredState.isError) break;
+
+        results.push(desiredState.result);
+        nextState = desiredState;
+
+        const separatorState = separatorParser.parserStateTransFn(nextState);
+        if (separatorState.isError) break;
+
+        nextState = separatorState;
+    }
+
+    if(results.length === 0) {
+        return updateParserError(parserState, `SeparateByOne: unable to find value @ index ${parserState.index}`);
+    }
+    return updateParserResult(nextState, results);
+});
+
+const lazy = parserThunk => new Parser(parserState => {
+    const parser = parserThunk();
+    return parser.parserStateTransFn(parserState);
+});
 
 module.exports ={
     sequenceOf,
@@ -215,6 +260,9 @@ module.exports ={
     many,
     manyOne,
     between,
+    separateBy,
+    separateByOne,
+    lazy,
 }
 
 
