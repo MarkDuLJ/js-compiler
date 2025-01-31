@@ -40,6 +40,19 @@ class Parser {
         })
     }
 
+    //full version of map function
+    chain(fn) {
+       return new Parser(parserState => {
+        const nextState = this.parserStateTransFn(parserState);
+        if(nextState.isError) return nextState;
+
+        //use fn to get next parser, that's why call it chain
+        const nextParser = fn(nextState.result);
+
+        return nextParser.parserStateTransFn(nextState);
+       }); 
+    }
+
     errorMap(fn) {
         return new Parser(parserState => {
             const nextState = this.parserStateTransFn(parserState);

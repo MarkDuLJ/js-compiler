@@ -159,8 +159,6 @@ test("between parser", () => {
     const brackets = between(str('('), str(')'));
     const parser = brackets(letters);
     const result = parser.run("(hoohoo)");
-
-    console.log(result);
     
     expect(result).toMatchObject({
         targetString: '(hoohoo)',
@@ -170,5 +168,61 @@ test("between parser", () => {
         error: null
     })
 
+})
+
+/**
+ * try to parse string like below
+ * "string:hey"
+ * "number:33"
+ * "diceroll:2d9"
+ */
+test("use parser combination", () => {
+    const stringResult = {type:"string", value: "hey"};
+    const numberResult = {type:"number", value: "33"};
+    const diceResult = {type:"diceroll", value: [2,9]};
+
+    const stringParser = letters.map(result => ({
+        type:"string",
+        value:result
+    }));
+
+    const numberParser = digits.map(result => ({
+        type:"number",
+        value:Number(result)
+    }));
+
+    const dicerollParser = sequenceOf([
+        digits,
+        str('d'),
+        digits
+    ]).map((results) => ({
+        type:"diceroll",
+        value:[Number(results[0]), Number(results[2])]
+    }));
+
+    const parser = sequenceOf([
+        letters,
+        str(':')
+    ]).map(results => results[0])
+    .chain(type => {
+        if(type === 'string'){
+            return stringParser;
+        }else if(type === 'number') {
+            return numberParser
+        }
+
+        return dicerollParser; // suppose only 3 kind of parsers
+    })
+
+    const result = parser.run("diceroll:2d9");
+
+    console.log(result);
+    expect(result).toMatchObject({
+        targetString: 'diceroll:2d9',
+        index: 12,
+        result: diceResult,
+        isError: false,
+        error: null
+    })
 })
 
