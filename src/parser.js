@@ -185,6 +185,12 @@ const manyOne = parser => new Parser(parserState => {
 
 })
 
+const between = (leftparser, rightparser) => contentparser => sequenceOf([
+    leftparser,
+    contentparser,
+    rightparser,
+]).map(results => results[1]);
+
 
 
 module.exports ={
@@ -195,6 +201,7 @@ module.exports ={
     choice,
     many,
     manyOne,
+    between,
 }
 
 

@@ -9,6 +9,7 @@ const {
     choice, 
     many, 
     manyOne,
+    between,
 } =require("../src/parser.js");
 
 test("parse string", () => {
@@ -152,5 +153,22 @@ test("many parser with choice", () => {
         result: ["123", "abc", "45"],
         targetString: "123abc45"
     })
+})
+
+test("between parser", () => {
+    const brackets = between(str('('), str(')'));
+    const parser = brackets(letters);
+    const result = parser.run("(hoohoo)");
+
+    console.log(result);
+    
+    expect(result).toMatchObject({
+        targetString: '(hoohoo)',
+        index: 8,
+        result: 'hoohoo',
+        isError: false,
+        error: null
+    })
+
 })
 
