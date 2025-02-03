@@ -14,6 +14,7 @@ const {
     lazy,
     betweenParenthese,
     operatorParser,
+    evaluate,
 } =require("../src/parser.js");
 
 test("parse string", () => {
@@ -280,7 +281,6 @@ const calParser = betweenParenthese(sequenceOf([
     const result = expr.run('(+ 1 2)');
     // const result = calParser.run('(+ (* 2 3) (- (/ 8 4) 2))');
 
-    console.log(JSON.stringify(result, null, 2));
 
     expect(result).toMatchObject({
         error:null,
@@ -299,4 +299,15 @@ const calParser = betweenParenthese(sequenceOf([
             }
         }            
     });
+
+    const interpreter = program => {
+        const result =  expr.run(program);
+        if( result.isError) return;
+        return evaluate(result.result);
+    }
+
+    const evalVal = interpreter('(+ (* 2 3) (- (/ 8 4) 2))');
+
+    console.log("VALUE:", evalVal);
+    expect(Number(evalVal)).toBe(6);
 })

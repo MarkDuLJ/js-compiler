@@ -264,6 +264,24 @@ const betweenParenthese = between(
     str(')')
 );
 
+const evaluate = node => {
+    if (node.type === 'number') return node.value;
+
+    if (node.type === 'operation') {
+        switch (node.value.op) {
+            case '+':                
+                return evaluate(node.value.a) + evaluate(node.value.b);
+            case '-':                
+                return evaluate(node.value.a) - evaluate(node.value.b);
+            case '*':                
+                return evaluate(node.value.a) * evaluate(node.value.b);
+            case '/':                
+                return evaluate(node.value.a) / evaluate(node.value.b);
+        
+        }
+    }
+}
+
 module.exports ={
     sequenceOf,
     str,
@@ -278,6 +296,7 @@ module.exports ={
     lazy,
     betweenParenthese,
     operatorParser,
+    evaluate,
 }
 
 
