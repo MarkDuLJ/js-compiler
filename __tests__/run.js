@@ -11,7 +11,9 @@ const {
     manyOne,
     between,
     separateBy,
-    lazy
+    lazy,
+    betweenParenthese,
+    operatorParser,
 } =require("../src/parser.js");
 
 test("parse string", () => {
@@ -238,10 +240,63 @@ test("recursive parser", ()=>{
     const arrayParser = betweenBricket(commaSeparated(value));
     const result = arrayParser.run("[1,[2,[3],4],5]");
 
-    console.log(result);
     expect(result).toMatchObject({
         error: null,
         result: [ '1', [ '2', ['3'], '4' ], '5' ]
     })
 })
 
+// calculate (+ 10 2) or (+ (* 2 3) (/ 8 4))
+test("calculation parser", ()=> {
+    const numberParser = digits.map(n=>({
+        type:'number',
+        value: Number(n)
+    }));
+
+    const whitespaceParser = manyOne(str(' '));
+
+    const expr = lazy(() => choice([
+        numberParser,
+        calParser,
+    ]));
+
+const calParser = betweenParenthese(sequenceOf([
+    operatorParser,
+    // whitespaceParser,
+    str(' '),
+    expr,
+    // whitespaceParser,
+    str(' '),
+    expr,
+])).map(results => ({
+    type:'operation',
+    value: {
+        op: results[0],
+        a: results[2],
+        b: results[4],
+    }
+}));
+
+    const result = expr.run('(+ 1 2)');
+    // const result = calParser.run('(+ (* 2 3) (- (/ 8 4) 2))');
+
+    console.log(JSON.stringify(result, null, 2));
+
+    expect(result).toMatchObject({
+        error:null,
+        result: {
+            "type": "operation",
+            "value": {
+              "op": "+",
+              "a": {
+                "type": "number",
+                "value": 1
+              },
+              "b": {
+                "type": "number",
+                "value": 2
+              }
+            }
+        }            
+    });
+})

@@ -251,6 +251,19 @@ const lazy = parserThunk => new Parser(parserState => {
     return parser.parserStateTransFn(parserState);
 });
 
+
+const operatorParser = choice([
+    str('+'),
+    str('-'),
+    str('*'),
+    str('/'),
+]);
+
+const betweenParenthese = between(
+    str('('),
+    str(')')
+);
+
 module.exports ={
     sequenceOf,
     str,
@@ -263,6 +276,8 @@ module.exports ={
     separateBy,
     separateByOne,
     lazy,
+    betweenParenthese,
+    operatorParser,
 }
 
 
