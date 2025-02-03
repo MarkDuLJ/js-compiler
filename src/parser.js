@@ -280,7 +280,68 @@ const evaluate = node => {
         
         }
     }
-}
+};
+
+const Bit = new Parser(parserState => {
+    if(parserState.isError) return parserState;
+
+    const byteOffset = Math.floor(parserState.index / 8);
+    
+    if(byteOffset >= parserState.targetString.byteLength) {
+        return updateParserError(parserState, `Bit: unexpected end of input`);
+    }
+    
+    const byte = parserState.targetString.getUint8(byteOffset);
+
+    // const bitOffset =parserState.index % 8;
+    const bitOffset = 7 - (parserState.index % 8);
+
+    const result = (byte >> bitOffset) & 1;
+    return updateParserState(parserState, parserState.index + 1, result);
+});
+
+const Zero = new Parser(parserState => {
+    if(parserState.isError) return parserState;
+
+    const byteOffset = Math.floor(parserState.index / 8);
+    
+    if(byteOffset >= parserState.targetString.byteLength) {
+        return updateParserError(parserState, `Zero: unexpected end of input`);
+    }
+    
+    const byte = parserState.targetString.getUint8(byteOffset);
+
+    const bitOffset = 7 - (parserState.index % 8);
+
+    const result = (byte >> bitOffset) & 1;
+    if( result !== 0){
+        return updateParserError(`Zero: got non zero value at index: ${parserState.index}`);
+    }
+
+    return updateParserState(parserState, parserState.index + 1, result);
+});
+
+const One = new Parser(parserState => {
+    if(parserState.isError) return parserState;
+
+    const byteOffset = Math.floor(parserState.index / 8);
+    
+    if(byteOffset >= parserState.targetString.byteLength) {
+        return updateParserError(parserState, `One: unexpected end of input`);
+    }
+    
+    const byte = parserState.targetString.getUint8(byteOffset);
+
+    // const bitOffset =parserState.index % 8;
+    const bitOffset = 7 - (parserState.index % 8);
+
+    const result = (byte >> bitOffset) & 1;
+    if(result !== 1) {
+        return updateParserError(`One: got non one value at index: ${parserState.index}`);
+    }
+    return updateParserState(parserState, parserState.index + 1, result);
+});
+
 
 module.exports ={
     sequenceOf,
@@ -297,6 +358,9 @@ module.exports ={
     betweenParenthese,
     operatorParser,
     evaluate,
+    Bit,
+    Zero,
+    One,
 }
 
 

@@ -15,6 +15,9 @@ const {
     betweenParenthese,
     operatorParser,
     evaluate,
+    Bit,
+    One,
+    Zero,
 } =require("../src/parser.js");
 
 test("parse string", () => {
@@ -308,6 +311,33 @@ const calParser = betweenParenthese(sequenceOf([
 
     const evalVal = interpreter('(+ (* 2 3) (- (/ 8 4) 2))');
 
-    console.log("VALUE:", evalVal);
     expect(Number(evalVal)).toBe(6);
+});
+
+test("parsing binary stream", () => {
+    const parser = sequenceOf([
+        One,
+        One,
+        One,
+        Zero,
+        One,
+        Zero,
+        One,
+        Zero,
+    ]);
+
+    const data = (new Uint8Array([234, 235])).buffer;
+    const dataView = new DataView(data);
+    const result = parser.run(dataView);
+
+    expect(result).toMatchObject({
+        index: 8,
+        result: [
+            1, 1, 1, 0,
+            1, 0, 1, 0
+        ],
+        isError: false,
+        error: null
+    })
+    
 })
