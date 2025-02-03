@@ -18,6 +18,7 @@ const {
     Bit,
     One,
     Zero,
+    Uint,
 } =require("../src/parser.js");
 
 test("parse string", () => {
@@ -336,6 +337,27 @@ test("parsing binary stream", () => {
             1, 1, 1, 0,
             1, 0, 1, 0
         ],
+        isError: false,
+        error: null
+    })
+    
+})
+
+test("parsing binary to decimal", () => {
+    const parser = sequenceOf([
+        Uint(8),
+        Uint(8),
+    ]);
+
+    const data = (new Uint8Array([234, 235])).buffer;
+    const dataView = new DataView(data);
+    const result = parser.run(dataView);
+
+    console.log(result);
+    
+    expect(result).toMatchObject({
+        index: 16,
+        result: [234,235],
         isError: false,
         error: null
     })

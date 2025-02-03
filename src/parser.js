@@ -342,6 +342,12 @@ const One = new Parser(parserState => {
     return updateParserState(parserState, parserState.index + 1, result);
 });
 
+const Uint = n => sequenceOf(Array.from({length:n}, () => Bit))
+    .map(bits => {
+        return bits.reduce((acc,bit, i) => {
+          return acc + (bit << (n-1 - i));  
+        },0);
+    });
 
 module.exports ={
     sequenceOf,
@@ -361,6 +367,7 @@ module.exports ={
     Bit,
     Zero,
     One,
+    Uint,
 }
 
 
